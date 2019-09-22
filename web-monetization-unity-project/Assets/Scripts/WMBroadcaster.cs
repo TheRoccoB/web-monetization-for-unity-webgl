@@ -25,6 +25,8 @@ public class WMBroadcaster : MonoBehaviour
         "{\"requestId\":\"344d36cf-a27c-45b9-9e85-86ed48364ff5\",\"id\":\"344d36cf-a27c-45b9-9e85-86ed48364ff5\",\"resolvedEndpoint\":\"https://coil.xrptipbot.com/JABJLDXNSje7h_bY26_6wg\",\"metaContent\":\"$coil.xrptipbot.com/JABJLDXNSje7h_bY26_6wg\"}";
 
     private string _simulatedProgressDetail = "{\"amount\":\"200000\",\"assetCode\":\"USD\",\"assetScale\":9}";
+    
+    private bool isSimulating = false;
 
 #if UNITY_WEBGL
 #if UNITY_EDITOR
@@ -48,7 +50,8 @@ public class WMBroadcaster : MonoBehaviour
 
         if (simulateMonetization)
         {
-            Debug.Log("Simulating Monetization Events! Don't forget to shut this off for release!");
+            Debug.Log("Simulating Monetization Events! Don't forget to shut this off for release!");StartCoroutine(SimulateEventsCoroutine());
+            StartSimulation();
         }
     }
 
@@ -65,20 +68,25 @@ public class WMBroadcaster : MonoBehaviour
         OnMonetizationProgress?.Invoke(detail);
     }
 
-    void Update()
+    public void StartSimulation()
     {
-        if (simulateMonetization)
+        Debug.Log("Starting Simulation");
+        if (!isSimulating)
         {
             StartCoroutine(SimulateEventsCoroutine());
+            isSimulating = true;
         }
+        
     }
 
     IEnumerator SimulateEventsCoroutine()
     {
+        Debug.Log("Simulating Monetization Start");
         monetizationstart(_simulatedStartDetail);
 
         while (true)
         {
+            Debug.Log("Simulating Monetization Progress");
             monetizationprogress(_simulatedProgressDetail);
             yield return new WaitForSeconds(2f);
         }
